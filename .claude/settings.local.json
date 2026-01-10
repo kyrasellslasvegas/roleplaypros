@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --yes)",
+      "Bash(npm install)",
+      "Bash(npm install next@latest)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.heygen.com)",
+      "mcp__ide__getDiagnostics",
+      "Bash(tree:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(find:*)",
+      "Bash(dir /s /b \"C:\\\\Users\\\\Kyra\\\\OneDrive\\\\Documents\\\\Roleplay Saas\\\\src\")",
+      "Bash(findstr:*)",
+      "Bash(vercel --version:*)",
+      "Bash(npx vercel:*)"
+    ]
+  }
+}
