@@ -236,6 +236,17 @@ export default function SessionPage({ params }: { params: { id: string } }) {
     }
   }
 
+  // Auto-connect voice when session starts
+  useEffect(() => {
+    onConnectVoice();
+
+    // Cleanup on unmount
+    return () => {
+      onDisconnectVoice();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // UI helpers
   const phaseDots: PhaseId[] = [1, 2, 3, 4, 5];
 
