@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useRef, useState, useCallback, useEffect } from "react";
+import React, { useMemo, useRef, useState, useCallback, useEffect, use } from "react";
 import { getPhaseScript } from "@/lib/phaseScripts";
 import type { ConsultFormat, Difficulty, PhaseId, StateMode, Vibe } from "@/lib/types";
 import { connectVoice, disconnectVoice } from "@/lib/realtimeVoiceClient";
@@ -25,8 +25,8 @@ type CoachReport = {
   updatedAt: string;
 };
 
-export default function SessionPage({ params }: { params: { id: string } }) {
-  const sessionId = params.id;
+export default function SessionPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: sessionId } = use(params);
 
   // UI state (keep)
   const [difficulty, setDifficulty] = useState<Difficulty>("Beginner");
@@ -160,7 +160,18 @@ export default function SessionPage({ params }: { params: { id: string } }) {
     analyzerRef.current = { analyser: null, ctx: null, animId: null };
     setAudioLevel(0);
 
-    disconnectVoice(voiceRef.current);
+    // Stop all microphone tracks explicitly
+    if (voiceRef.current.stream) {
+      voiceRef.current.stream.getTracks().forEach((track) => {
+        track.stop();
+      });
+    }
+
+    // Close WebRTC connection
+    if (voiceRef.current.pc) {
+      voiceRef.current.pc.close();
+    }
+
     voiceRef.current = { pc: null, stream: null };
     setVoiceStatus("Disconnected");
   }
