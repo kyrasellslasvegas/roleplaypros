@@ -2,7 +2,8 @@
 
 ## Executive Summary
 
-This document outlines the complete implementation strategy for a world-class Real Estate Sales Training SaaS application featuring AI-powered buyer roleplay, real-time coaching, compliance monitoring, and teleprompter-based script training.
+This document outlines the complete implementation strategy 
+for a world-class Real Estate Sales Training SaaS application featuring AI-powered buyer roleplay realistic avatar that talks and interact with the users as if it was a real buyer, real-time coaching, compliance monitoring, and teleprompter-based script training.
 
 **Core Value Proposition:**
 Transform real estate agents into top-tier sales professionals through realistic AI buyer simulations, immediate feedback, and compliance-safe practice environments.
@@ -14,8 +15,8 @@ Transform real estate agents into top-tier sales professionals through realistic
 - **Authentication:** Supabase Auth (JWT-based)
 - **Database:** Supabase PostgreSQL
 - **AI Engine:** OpenAI GPT-4o for real-time conversations
-- **Voice:** ElevenLabs or OpenAI Realtime API
-- **Deployment:** Vercel (recommended)
+- **Voice:**  OpenAI Realtime API
+- **Deployment:** Vercel 
 
 ---
 

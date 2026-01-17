@@ -337,7 +337,7 @@ async function sendWeeklyEmail(
     });
 
     await resend.emails.send({
-      from: "RoleplayPro <reports@roleplaypro.com>",
+      from: "Roleplay Pros <reports@roleplaypros.com>",
       to: user.email,
       subject: `Your Weekly Training Report - ${weekRange}`,
       html,
@@ -464,7 +464,7 @@ function buildWeeklyEmailHtml(data: {
           <!-- Footer -->
           <tr>
             <td style="padding: 20px; background-color: #0a0a0a; border-radius: 0 0 12px 12px; border: 1px solid #262626; border-top: none; text-align: center;">
-              <p style="margin: 0; color: #525252; font-size: 12px;">RoleplayPro - AI Sales Training</p>
+              <p style="margin: 0; color: #525252; font-size: 12px;">Roleplay Pros - AI Sales Training</p>
               <p style="margin: 8px 0 0; color: #525252; font-size: 11px;">
                 <a href="${process.env.NEXT_PUBLIC_APP_URL}/settings/notifications" style="color: #525252;">Manage email preferences</a>
               </p>

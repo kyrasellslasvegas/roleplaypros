@@ -9,11 +9,11 @@ import {
 } from "@/components/waitlist";
 
 export const metadata: Metadata = {
-  title: "Join the Waitlist | RoleplayPro - AI Sales Training for Real Estate",
+  title: "Join the Waitlist | Roleplay Pros - AI Sales Training for Real Estate",
   description:
-    "Be among the first to experience RoleplayPro. Get 7 days early access, 30% lifetime discount, and exclusive buyer personas. Join 1,200+ Nevada agents on the waitlist.",
+    "Be among the first to experience Roleplay Pros. Get 7 days early access, 30% lifetime discount, and exclusive buyer personas. Join 1,200+ Nevada agents on the waitlist.",
   openGraph: {
-    title: "Join the Waitlist | RoleplayPro",
+    title: "Join the Waitlist | Roleplay Pros",
     description:
       "The future of real estate training launches January 16, 2026. Get early access and exclusive founding member benefits.",
     type: "website",

@@ -14,6 +14,7 @@ interface ExtendedBuyerRespondRequest extends BuyerRespondRequest {
   agentSpeakingDuration?: number;
   silenceDuration?: number;
   checkInterruption?: boolean;
+  difficulty?: "beginner" | "intermediate" | "advanced";
 }
 
 export async function POST(request: Request) {
@@ -38,6 +39,7 @@ export async function POST(request: Request) {
       agentSpeakingDuration = 0,
       silenceDuration = 0,
       checkInterruption = false,
+      difficulty = "intermediate",
     } = body;
 
     // Validate buyerProfile exists
@@ -90,9 +92,12 @@ export async function POST(request: Request) {
       }
     }
 
-    // Build the system prompt
-    const systemPrompt = generateBuyerSystemPrompt(buyerProfile);
+    // Build the system prompt with difficulty
+    const systemPrompt = generateBuyerSystemPrompt(buyerProfile, difficulty);
     const phaseGuidance = getPhaseGuidance(currentPhase);
+
+    // Special handling for session start - buyer initiates conversation
+    const isSessionStart = userMessage === "[SESSION_START]";
 
     // Build conversation messages for OpenAI
     const messages: OpenAIMessage[] = [
@@ -102,26 +107,43 @@ export async function POST(request: Request) {
       },
     ];
 
-    // Add conversation history
-    for (const entry of conversationHistory.slice(-10)) {
-      messages.push({
-        role: entry.speaker === "user" ? "user" : "assistant",
-        content: entry.content,
-      });
+    // Add conversation history (skip if session start)
+    if (!isSessionStart) {
+      for (const entry of conversationHistory.slice(-10)) {
+        messages.push({
+          role: entry.speaker === "user" ? "user" : "assistant",
+          content: entry.content,
+        });
+      }
     }
 
     // Add the current user message
     messages.push({
       role: "user",
-      content: userMessage,
+      content: isSessionStart
+        ? "[SESSION_START] - You are the buyer initiating the conversation. Give a natural opening greeting based on your personality."
+        : userMessage,
     });
 
     // Generate buyer response
-    const response = await generateChatCompletion(messages, {
-      model: "gpt-4o",
-      temperature: 0.8,
-      maxTokens: 300,
-    });
+    let response: string;
+    try {
+      response = await generateChatCompletion(messages, {
+        model: "gpt-4o",
+        temperature: 0.8,
+        maxTokens: 300,
+      });
+    } catch (error) {
+      // Handle OpenAI quota/rate limit errors gracefully
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
+      if (errorMessage.includes("429") || errorMessage.includes("quota") || errorMessage.includes("rate")) {
+        console.warn("OpenAI quota exceeded, using fallback response");
+        response = getFallbackBuyerResponse(buyerProfile.personality, isSessionStart, userMessage);
+      } else {
+        throw error;
+      }
+    }
 
     // Determine emotion based on content analysis
     const emotion = analyzeResponseEmotion(response, buyerProfile.personality);
@@ -320,4 +342,80 @@ function checkPhaseAdvancement(
   }
 
   return { shouldAdvance: false };
+}
+
+// Fallback responses when OpenAI is unavailable
+function getFallbackBuyerResponse(
+  personality: string,
+  isSessionStart: boolean,
+  userMessage: string
+): string {
+  // Session start greetings by personality
+  if (isSessionStart) {
+    const greetings: Record<string, string[]> = {
+      friendly: [
+        "Hi! I heard good things about you and I'm looking to buy my first home.",
+        "Hey there! Thanks for taking the time to meet with me. I'm excited to start looking for a home.",
+      ],
+      cautious: [
+        "Hello. I'm interested in buying a home and wanted to ask you some questions first.",
+        "Hi. I've been researching the market and thought I should talk to an agent.",
+      ],
+      dominant: [
+        "Let's cut to it - I'm looking for a home and I want to know why I should work with you.",
+        "I'm interviewing a few agents. Tell me what makes you different.",
+      ],
+      distracted: [
+        "Hey, sorry I only have a few minutes but I wanted to talk about finding a place.",
+        "Hi - hold on one sec - okay, I'm here. So I need to find a house.",
+      ],
+      nervous: [
+        "Hi... um, I'm not really sure how this works but I'm thinking about buying a home?",
+        "Hello. This is my first time doing this and I'm a little nervous honestly.",
+      ],
+      skeptical: [
+        "I'm calling around to interview agents. Tell me why you're different from everyone else.",
+        "So I've heard a lot about agents just trying to close deals. How do I know you're different?",
+      ],
+    };
+    const options = greetings[personality] || greetings.cautious;
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  // Generic responses based on personality
+  const responses: Record<string, string[]> = {
+    friendly: [
+      "That's interesting! Can you tell me more about that?",
+      "I appreciate you explaining that. What else should I know?",
+      "Oh nice! So what would be the next step?",
+    ],
+    cautious: [
+      "I see. And how would that work exactly?",
+      "Interesting. Can you give me more details on that?",
+      "I'd like to understand that better before we move on.",
+    ],
+    dominant: [
+      "Get to the point. What's the bottom line here?",
+      "I need specifics, not generalities. What exactly are we looking at?",
+      "Okay, but what does that mean for me specifically?",
+    ],
+    distracted: [
+      "Sorry, what was that? I got distracted for a second.",
+      "Right, right. So what's the main thing I need to focus on?",
+      "Can you give me the quick version?",
+    ],
+    nervous: [
+      "That makes sense... I think. Is that normal?",
+      "Okay... that's a lot to process. What if something goes wrong?",
+      "I'm still worried about making a mistake here.",
+    ],
+    skeptical: [
+      "Everyone says that. Can you prove it?",
+      "How do I know that's actually true?",
+      "I've heard that before from other agents.",
+    ],
+  };
+
+  const options = responses[personality] || responses.cautious;
+  return options[Math.floor(Math.random() * options.length)];
 }

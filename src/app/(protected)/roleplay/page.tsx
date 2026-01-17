@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,8 +24,11 @@ import {
   Smile,
   AlertTriangle,
   Search,
+  UserCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { AvatarOption } from "@/types/session";
+import { SkillBreakdownInfo } from "@/components/roleplay/skill-breakdown-info";
 
 const difficultyLevels = [
   {
@@ -102,6 +105,15 @@ export default function RoleplayPage() {
     personality: "cautious",
   });
 
+  // Custom avatar - single default avatar
+  const defaultAvatar: AvatarOption = {
+    id: "default",
+    name: "AI Buyer",
+    description: "Professional AI buyer for roleplay practice",
+    previewImage: "/avatars/default-buyer.svg",
+  };
+  const [selectedAvatar] = useState<AvatarOption>(defaultAvatar);
+
   const handleProfileChange = (key: string, value: string) => {
     setProfile((prev) => ({ ...prev, [key]: value }));
   };
@@ -111,6 +123,8 @@ export default function RoleplayPage() {
       difficulty,
       durationMinutes: parseInt(duration),
       buyerProfile: profile,
+      selectedAvatarId: selectedAvatar?.id,
+      selectedAvatarName: selectedAvatar?.name,
     };
     const encodedConfig = encodeURIComponent(JSON.stringify(config));
     router.push(`/roleplay/session?config=${encodedConfig}`);
@@ -207,6 +221,36 @@ export default function RoleplayPage() {
                     </span>
                   </button>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* AI Buyer Avatar */}
+          <Card className="border-primary/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <UserCircle className="h-5 w-5 text-primary" />
+                Your AI Buyer
+              </CardTitle>
+              <CardDescription>
+                Practice with our AI-powered buyer simulation
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4 p-4 rounded-xl border border-primary bg-primary/5">
+                <div className="relative">
+                  <img
+                    src={selectedAvatar.previewImage || "/avatars/default-buyer.svg"}
+                    alt={selectedAvatar.name}
+                    className="h-16 w-16 rounded-full object-cover border-2 border-primary/30"
+                  />
+                  <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-green-500 border-2 border-background" />
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">{selectedAvatar.name}</p>
+                  <p className="text-sm text-muted-foreground">{selectedAvatar.description}</p>
+                  <p className="mt-1 text-xs text-primary">Voice adapts to buyer personality</p>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -373,6 +417,27 @@ export default function RoleplayPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Selected Avatar Preview */}
+              {selectedAvatar && (
+                <div className="flex items-center gap-3 pb-3 border-b border-border">
+                  {selectedAvatar.previewImage ? (
+                    <img
+                      src={selectedAvatar.previewImage}
+                      alt={selectedAvatar.name}
+                      className="h-12 w-12 rounded-full object-cover border border-border"
+                    />
+                  ) : (
+                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center border border-border">
+                      <UserCircle className="h-6 w-6 text-primary/60" />
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-medium text-foreground">{selectedAvatar.name}</p>
+                    <p className="text-xs text-muted-foreground">AI Buyer Avatar</p>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Difficulty</span>
@@ -428,6 +493,9 @@ export default function RoleplayPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Skill Breakdown Info - Always show */}
+          <SkillBreakdownInfo compact />
 
           {/* Script Phases Preview (for Beginner) */}
           {difficulty === "beginner" && (

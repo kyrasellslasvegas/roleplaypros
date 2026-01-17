@@ -12,7 +12,7 @@ const incentives = [
     icon: Calendar,
     title: "7 Days Early Access",
     description:
-      "Be among the first to experience RoleplayPro before anyone else. Start training on January 9th while others wait until the 16th.",
+      "Be among the first to experience Roleplay Pros before anyone else. Start training on January 9th while others wait until the 16th.",
     highlight: "Jan 9th Access",
   },
   {

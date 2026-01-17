@@ -100,7 +100,7 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
       const { error } = await supabase.auth.signInWithOtp({
         email: values.email,
         options: {
-          emailRedirectTo: `${window.location.origin}/api/auth/callback?plan=${values.plan}`,
+          emailRedirectTo: `${window.location.origin}/api/auth/callback?plan=${values.plan}&next=/dashboard`,
           data: {
             full_name: values.fullName,
             subscription_tier: values.plan,

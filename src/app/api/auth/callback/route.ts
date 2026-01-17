@@ -103,14 +103,18 @@ export async function GET(request: Request) {
 }
 
 function redirectToDestination(request: Request, origin: string, next: string) {
-  const forwardedHost = request.headers.get("x-forwarded-host");
   const isLocalEnv = process.env.NODE_ENV === "development";
+
+  // Use the configured app URL in production for reliable redirects
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
   if (isLocalEnv) {
     return NextResponse.redirect(`${origin}${next}`);
-  } else if (forwardedHost) {
-    return NextResponse.redirect(`https://${forwardedHost}${next}`);
+  } else if (appUrl) {
+    // Use configured production URL
+    return NextResponse.redirect(`${appUrl}${next}`);
   } else {
+    // Fallback to origin
     return NextResponse.redirect(`${origin}${next}`);
   }
 }

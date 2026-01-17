@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import {
   Clock,
   MessageSquare,
   Target,
+  RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SessionFeedback, TranscriptEntry } from "@/types/session";
@@ -51,11 +52,44 @@ export default function ReviewPage({
   const [session, setSession] = useState<SessionData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [pollCount, setPollCount] = useState(0);
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
+
+  // Retry analysis manually
+  const retryAnalysis = useCallback(async () => {
+    if (!session) return;
+    setIsRetrying(true);
+
+    try {
+      const response = await fetch("/api/ai/coach/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId }),
+      });
+
+      if (response.ok) {
+        // Refetch session data
+        const { data } = await supabase
+          .from("training_sessions")
+          .select("*")
+          .eq("id", sessionId)
+          .single();
+
+        if (data) {
+          setSession(data as SessionData);
+        }
+      }
+    } catch (err) {
+      console.error("Error retrying analysis:", err);
+    } finally {
+      setIsRetrying(false);
+    }
+  }, [session, sessionId, supabase]);
 
   useEffect(() => {
     async function fetchSession() {
@@ -69,9 +103,11 @@ export default function ReviewPage({
         if (fetchError) throw fetchError;
         setSession(data as SessionData);
 
-        // If still processing, poll for completion
+        // If still processing, poll for completion (max 20 polls = 60 seconds)
         if (data.analysis_status === "processing") {
           const interval = setInterval(async () => {
+            setPollCount(prev => prev + 1);
+
             const { data: updated } = await supabase
               .from("training_sessions")
               .select("*")
@@ -83,6 +119,9 @@ export default function ReviewPage({
               clearInterval(interval);
             }
           }, 3000);
+
+          // Stop polling after 60 seconds
+          setTimeout(() => clearInterval(interval), 60000);
 
           return () => clearInterval(interval);
         }
@@ -128,6 +167,30 @@ export default function ReviewPage({
         <p className="text-sm text-muted-foreground/60">
           This usually takes about 30 seconds
         </p>
+        {pollCount > 10 && (
+          <div className="mt-4 text-center">
+            <p className="text-sm text-muted-foreground mb-3">
+              Taking longer than expected?
+            </p>
+            <Button
+              variant="outline"
+              onClick={retryAnalysis}
+              disabled={isRetrying}
+            >
+              {isRetrying ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Retrying...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Retry Analysis
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </div>
     );
   }
@@ -278,13 +341,20 @@ export default function ReviewPage({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-3">
+                <ul className="space-y-4">
                   {feedback.strengths.map((strength, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-green-500" />
-                      <span className="text-sm text-muted-foreground">
-                        {strength}
-                      </span>
+                      <div>
+                        {typeof strength === "string" ? (
+                          <span className="text-sm text-muted-foreground">{strength}</span>
+                        ) : (
+                          <>
+                            <p className="text-sm font-medium text-foreground">{strength.title}</p>
+                            <p className="text-sm text-muted-foreground">{strength.description}</p>
+                          </>
+                        )}
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -299,13 +369,28 @@ export default function ReviewPage({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-3">
+                <ul className="space-y-4">
                   {feedback.areasForImprovement.map((area, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-orange-500" />
-                      <span className="text-sm text-muted-foreground">
-                        {area}
-                      </span>
+                      <div>
+                        {typeof area === "string" ? (
+                          <span className="text-sm text-muted-foreground">{area}</span>
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-medium text-foreground">{area.title}</p>
+                              {area.priority === "critical" && (
+                                <span className="text-xs bg-red-500/20 text-red-500 px-1.5 py-0.5 rounded">Critical</span>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground">{area.description}</p>
+                            {area.practiceExercise && (
+                              <p className="text-xs text-primary mt-1 italic">Practice: {area.practiceExercise}</p>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -374,9 +459,45 @@ export default function ReviewPage({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-foreground">{feedback.nextSessionFocus}</p>
+              {typeof feedback.nextSessionFocus === "string" ? (
+                <p className="text-foreground">{feedback.nextSessionFocus}</p>
+              ) : (
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium text-primary">Primary Focus:</p>
+                    <p className="text-foreground">{feedback.nextSessionFocus.primary}</p>
+                  </div>
+                  {feedback.nextSessionFocus.secondary && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Secondary:</p>
+                      <p className="text-sm text-muted-foreground">{feedback.nextSessionFocus.secondary}</p>
+                    </div>
+                  )}
+                  {feedback.nextSessionFocus.drillRecommendation && (
+                    <div className="mt-2 p-3 bg-primary/10 rounded-lg">
+                      <p className="text-sm font-medium text-primary">Recommended Drill:</p>
+                      <p className="text-sm text-foreground">{feedback.nextSessionFocus.drillRecommendation}</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
+
+          {/* Coaching Script */}
+          {feedback.coachingScript && (
+            <Card className="border-primary/30 bg-primary/5">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5 text-primary" />
+                  Coach&apos;s Message
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-foreground italic">&ldquo;{feedback.coachingScript}&rdquo;</p>
+              </CardContent>
+            </Card>
+          )}
         </>
       ) : (
         <Card>

@@ -17,7 +17,7 @@ export default function LoginPage() {
             </div>
             <span className="font-display text-2xl font-semibold">
               <span className="text-primary font-semibold">Roleplay</span>
-              <span className="text-foreground">Pro</span>
+              <span className="text-foreground"> Pros</span>
             </span>
           </div>
 
@@ -49,16 +49,16 @@ export default function LoginPage() {
 
       {/* Right side - Background */}
       <div className="relative hidden w-0 flex-1 lg:block">
-        <div className="absolute inset-0 bg-gradient-to-br from-muted via-background to-background">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
           {/* Decorative elements */}
-          <div className="absolute top-1/4 left-1/4 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
+          <div className="absolute top-1/4 left-1/4 h-64 w-64 rounded-full bg-primary/20 blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
 
           {/* Content */}
           <div className="absolute inset-0 flex items-center justify-center p-12">
             <div className="max-w-lg text-center">
               <blockquote className="font-display text-2xl font-medium text-white/90">
-                &quot;RoleplayPro transformed my sales approach. I closed 40%
+                &quot;Roleplay Pros transformed my sales approach. I closed 40%
                 more deals in my first month.&quot;
               </blockquote>
               <div className="mt-8">
@@ -75,7 +75,7 @@ export default function LoginPage() {
                   ))}
                 </div>
                 <p className="mt-4 font-medium text-white">Sarah Mitchell</p>
-                <p className="text-sm text-white/60">
+                <p className="text-sm text-white/70">
                   Top Producer, Las Vegas Realty
                 </p>
               </div>

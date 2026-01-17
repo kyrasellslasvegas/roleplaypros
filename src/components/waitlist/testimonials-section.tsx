@@ -12,7 +12,7 @@ const testimonials = [
   },
   {
     quote:
-      "The compliance guard alone is worth it. I almost made a disclosure error in practice that would have cost me my license in real life. RoleplayPro caught it instantly.",
+      "The compliance guard alone is worth it. I almost made a disclosure error in practice that would have cost me my license in real life. Roleplay Pros caught it instantly.",
     author: "Marcus Chen",
     role: "Broker Associate, RE/MAX",
     location: "Henderson, NV",

@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "noreply@roleplaypro.com";
-const FROM_NAME = "RoleplayPro";
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "noreply@roleplaypros.com";
+const FROM_NAME = "Roleplay Pros";
 
 // Lazy initialization to avoid build-time errors
 function getResendClient() {
@@ -71,7 +71,7 @@ export async function sendApplicationConfirmationEmail({
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
     <tr>
       <td style="text-align: center; padding-bottom: 30px;">
-        <h1 style="color: #d4af37; font-size: 28px; margin: 0;">RoleplayPro</h1>
+        <h1 style="color: #d4af37; font-size: 28px; margin: 0;">Roleplay Pros</h1>
       </td>
     </tr>
     <tr>
@@ -79,7 +79,7 @@ export async function sendApplicationConfirmationEmail({
         <h2 style="color: #ffffff; font-size: 24px; margin: 0 0 20px 0;">Hi ${fullName},</h2>
 
         <p style="color: #a0a0a0; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
-          Thank you for applying for early access to RoleplayPro! We've received your application and our team is reviewing your license information.
+          Thank you for applying for early access to Roleplay Pros! We've received your application and our team is reviewing your license information.
         </p>
 
         <p style="color: #a0a0a0; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
@@ -116,19 +116,19 @@ export async function sendApplicationConfirmationEmail({
         </ol>
 
         <p style="color: #a0a0a0; font-size: 16px; line-height: 1.6; margin: 30px 0 0 0;">
-          Questions? Reply to this email or contact us at <a href="mailto:support@roleplaypro.com" style="color: #d4af37;">support@roleplaypro.com</a>
+          Questions? Reply to this email or contact us at <a href="mailto:support@roleplaypros.com" style="color: #d4af37;">support@roleplaypros.com</a>
         </p>
 
         <p style="color: #a0a0a0; font-size: 16px; line-height: 1.6; margin: 30px 0 0 0;">
           Ready to close more deals,<br>
-          <strong style="color: #fff;">The RoleplayPro Team</strong>
+          <strong style="color: #fff;">The Roleplay Pros Team</strong>
         </p>
       </td>
     </tr>
     <tr>
       <td style="text-align: center; padding-top: 30px;">
         <p style="color: #666; font-size: 12px; margin: 0;">
-          &copy; 2026 RoleplayPro. All rights reserved.
+          &copy; 2026 Roleplay Pros. All rights reserved.
         </p>
       </td>
     </tr>
@@ -140,7 +140,7 @@ export async function sendApplicationConfirmationEmail({
   const text = `
 Hi ${fullName},
 
-Thank you for applying for early access to RoleplayPro! We've received your application and our team is reviewing your license information.
+Thank you for applying for early access to Roleplay Pros! We've received your application and our team is reviewing your license information.
 
 This typically takes up to 1 hour during business hours.
 
@@ -155,15 +155,15 @@ What happens next?
 2. You'll receive an approval email with login link
 3. Start training with AI buyers immediately
 
-Questions? Reply to this email or contact us at support@roleplaypro.com
+Questions? Reply to this email or contact us at support@roleplaypros.com
 
 Ready to close more deals,
-The RoleplayPro Team
+The Roleplay Pros Team
   `.trim();
 
   return sendEmail({
     to,
-    subject: "We received your RoleplayPro application!",
+    subject: "We received your Roleplay Pros application!",
     html,
     text,
   });
@@ -193,7 +193,7 @@ export async function sendApprovalEmail({
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
     <tr>
       <td style="text-align: center; padding-bottom: 30px;">
-        <h1 style="color: #d4af37; font-size: 28px; margin: 0;">RoleplayPro</h1>
+        <h1 style="color: #d4af37; font-size: 28px; margin: 0;">Roleplay Pros</h1>
       </td>
     </tr>
     <tr>
@@ -207,7 +207,7 @@ export async function sendApprovalEmail({
         </h2>
 
         <p style="color: #a0a0a0; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0; text-align: center;">
-          Your application has been approved! You now have early access to RoleplayPro&mdash;the AI-powered training platform that helps real estate agents close more deals.
+          Your application has been approved! You now have early access to Roleplay Pros&mdash;the AI-powered training platform that helps real estate agents close more deals.
         </p>
 
         <div style="text-align: center; margin: 40px 0;">
@@ -239,14 +239,14 @@ export async function sendApprovalEmail({
 
         <p style="color: #a0a0a0; font-size: 16px; line-height: 1.6; margin: 30px 0 0 0;">
           Ready to win,<br>
-          <strong style="color: #fff;">The RoleplayPro Team</strong>
+          <strong style="color: #fff;">The Roleplay Pros Team</strong>
         </p>
       </td>
     </tr>
     <tr>
       <td style="text-align: center; padding-top: 30px;">
         <p style="color: #666; font-size: 12px; margin: 0;">
-          &copy; 2026 RoleplayPro. All rights reserved.
+          &copy; 2026 Roleplay Pros. All rights reserved.
         </p>
       </td>
     </tr>
@@ -258,7 +258,7 @@ export async function sendApprovalEmail({
   const text = `
 Congratulations, ${firstName}!
 
-Your application has been approved! You now have early access to RoleplayPro - the AI-powered training platform that helps real estate agents close more deals.
+Your application has been approved! You now have early access to Roleplay Pros - the AI-powered training platform that helps real estate agents close more deals.
 
 Access your dashboard here: ${dashboardUrl}
 
@@ -271,12 +271,12 @@ As an early access member, you get:
 Your journey to becoming a top-performing agent starts now. Let's get you closing more deals!
 
 Ready to win,
-The RoleplayPro Team
+The Roleplay Pros Team
   `.trim();
 
   return sendEmail({
     to,
-    subject: "You're approved! Welcome to RoleplayPro",
+    subject: "You're approved! Welcome to Roleplay Pros",
     html,
     text,
   });

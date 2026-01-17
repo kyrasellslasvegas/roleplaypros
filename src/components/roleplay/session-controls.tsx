@@ -56,7 +56,7 @@ export function SessionControls({
           </Button>
         ) : (
           <>
-            {/* Mic status indicator when session is active */}
+            {/* Mic status indicator */}
             <div
               className={cn(
                 "flex items-center gap-2 rounded-lg px-4 py-2 transition-all",

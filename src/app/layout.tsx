@@ -15,7 +15,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "RoleplayPro | AI-Powered Real Estate Sales Training",
+  title: "Roleplay Pros | AI-Powered Real Estate Sales Training",
   description:
     "Master real estate sales with AI-powered roleplay training. Practice with realistic AI buyers, get instant feedback from AI coaches, and ensure compliance with Nevada real estate law.",
   keywords: [

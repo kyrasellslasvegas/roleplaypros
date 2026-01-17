@@ -75,7 +75,6 @@ CREATE TABLE IF NOT EXISTS public.training_sessions (
   feedback JSONB,
   transcript JSONB DEFAULT '[]',
   buyer_profile JSONB,
-  heygen_session_id TEXT,
   coach_suggestions JSONB DEFAULT '[]',
   session_phases JSONB DEFAULT '[]',
   ended_at TIMESTAMPTZ,

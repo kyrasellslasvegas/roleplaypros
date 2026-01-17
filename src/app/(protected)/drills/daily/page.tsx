@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Calendar, Trophy, Target, Loader2 } from "lucide-react";
+import { ArrowLeft, Calendar, Trophy, Target, Loader2, RotateCcw } from "lucide-react";
 import {
   DailyObjectionCard,
   StreakIndicator,
@@ -24,63 +24,64 @@ export default function DailyDrillPage() {
 
   // Load today's objection and gamification data
   useEffect(() => {
-    async function loadData() {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        // Fetch in parallel
-        const [objectionRes, gamificationRes] = await Promise.all([
-          fetch("/api/drills/daily"),
-          fetch("/api/gamification/progress"),
-        ]);
-
-        if (objectionRes.ok) {
-          const data = await objectionRes.json();
-          setObjection(data.objection);
-
-          // If no objection exists, automatically generate one
-          if (data.needsGeneration) {
-            await handleGenerateObjection();
-          }
-        }
-
-        if (gamificationRes.ok) {
-          const data = await gamificationRes.json();
-          setGamificationData(data);
-        }
-      } catch (err) {
-        console.error("Error loading drill data:", err);
-        setError("Failed to load drill data");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadData();
+    loadDailyDrill();
   }, []);
 
-  // Generate today's objection
+  async function loadDailyDrill() {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // Fetch gamification data and generate/get today's objection in parallel
+      const [objectionRes, gamificationRes] = await Promise.all([
+        fetch("/api/drills/daily/generate", { method: "POST" }),
+        fetch("/api/gamification/progress"),
+      ]);
+
+      if (objectionRes.ok) {
+        const data = await objectionRes.json();
+        setObjection(data.objection);
+      } else {
+        const data = await objectionRes.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to load today's drill");
+      }
+
+      if (gamificationRes.ok) {
+        const data = await gamificationRes.json();
+        setGamificationData(data);
+      }
+    } catch (err) {
+      console.error("Error loading drill data:", err);
+      setError(err instanceof Error ? err.message : "Failed to load drill data");
+    } finally {
+      setIsLoading(false);
+      setIsGenerating(false);
+    }
+  }
+
+  // Regenerate objection (for manual refresh)
   async function handleGenerateObjection() {
+    setIsGenerating(true);
+    setError(null);
+    await loadDailyDrill();
+  }
+
+  // Reset today's drill (for testing new drills)
+  async function handleResetDrill() {
     try {
       setIsGenerating(true);
       setError(null);
 
-      const response = await fetch("/api/drills/daily/generate", {
-        method: "POST",
-      });
-
+      const response = await fetch("/api/drills/daily/reset", { method: "POST" });
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to generate objection");
+        throw new Error("Failed to reset drill");
       }
 
-      const data = await response.json();
-      setObjection(data.objection);
+      // Reload to get new drill
+      await loadDailyDrill();
     } catch (err) {
-      console.error("Error generating objection:", err);
-      setError(err instanceof Error ? err.message : "Failed to generate objection");
-    } finally {
+      console.error("Error resetting drill:", err);
+      setError(err instanceof Error ? err.message : "Failed to reset drill");
       setIsGenerating(false);
     }
   }
@@ -110,7 +111,7 @@ export default function DailyDrillPage() {
       const config = encodeURIComponent(
         JSON.stringify({
           sessionId: data.sessionId,
-          heygenToken: data.heygenToken,
+          avatarImageUrl: data.avatarImageUrl,
           buyerSystemPrompt: data.buyerSystemPrompt,
           objection: data.objection,
         })
@@ -270,6 +271,20 @@ export default function DailyDrillPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Dev: Reset drill button */}
+          {objection && !objection.completed && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleResetDrill}
+              disabled={isGenerating}
+              className="w-full text-muted-foreground hover:text-foreground"
+            >
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Reset & Get New Drill
+            </Button>
+          )}
         </div>
       </div>
     </div>

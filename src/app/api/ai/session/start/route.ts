@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { generateStreamingToken } from "@/lib/ai/heygen";
-import { generateBuyerSystemPrompt } from "@/lib/ai/prompts/buyer-personas";
-import type { SessionConfig, SessionStartResponse } from "@/types/session";
+import type { SessionConfig } from "@/types/session";
 
 interface StartSessionRequest {
   config: SessionConfig;
 }
+
 
 export async function POST(request: Request) {
   try {
@@ -92,28 +91,16 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate HeyGen streaming token
-    let heygenToken: string;
-    try {
-      heygenToken = await generateStreamingToken();
-    } catch (heygenError) {
-      console.error("HeyGen token error:", heygenError);
-      // Return a more specific error for HeyGen issues
-      return NextResponse.json(
-        { error: `HeyGen service error: ${heygenError instanceof Error ? heygenError.message : "Failed to connect to avatar service"}` },
-        { status: 503 }
-      );
-    }
+    // Avatar image URL - using a single default avatar for now
+    // Can be expanded to map different personalities to different images
+    const avatarImageUrl = "/avatars/default-buyer.svg";
 
-    // Generate the buyer system prompt
-    const buyerSystemPrompt = generateBuyerSystemPrompt(config.buyerProfile);
-
-    const response: SessionStartResponse = {
+    const response = {
       sessionId: session.id,
-      heygenToken,
-      buyerSystemPrompt,
+      avatarImageUrl,
     };
 
+    console.log(`Session ${session.id} started with avatar: ${avatarImageUrl}`);
     return NextResponse.json(response);
   } catch (error) {
     console.error("Error starting session:", error);

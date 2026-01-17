@@ -139,6 +139,9 @@ function WhisperCard({ suggestion, onDismiss }: WhisperCardProps) {
           </p>
         </div>
         <button
+          type="button"
+          title="Dismiss suggestion"
+          aria-label="Dismiss suggestion"
           onClick={handleDismiss}
           className="shrink-0 rounded p-1 transition-colors hover:bg-white/10"
         >

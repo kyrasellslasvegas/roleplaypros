@@ -3,9 +3,9 @@ import { AgentApplicationForm } from "@/components/applications";
 import { Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Apply for Early Access | RoleplayPro",
+  title: "Apply for Early Access | Roleplay Pros",
   description:
-    "Join RoleplayPro's early access program. Complete your application and start training with AI buyers in minutes.",
+    "Join Roleplay Pros's early access program. Complete your application and start training with AI buyers in minutes.",
 };
 
 export default function ApplyPage() {
@@ -18,7 +18,7 @@ export default function ApplyPage() {
           Early Access Application
         </div>
         <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          Get Early Access to RoleplayPro
+          Get Early Access to Roleplay Pros
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
           Complete your application below. We verify all licenses to ensure a

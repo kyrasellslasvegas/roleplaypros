@@ -1,6 +1,4 @@
-// AI service types for OpenAI and HeyGen integrations
-
-import type { StreamingEvents } from "@heygen/streaming-avatar";
+// AI service types for OpenAI integrations
 
 // OpenAI types
 export interface OpenAIMessage {
@@ -50,40 +48,6 @@ export interface FeedbackAnalysisRequest {
   difficulty: string;
   durationMinutes: number;
 }
-
-// HeyGen types
-export interface HeygenTokenResponse {
-  token: string;
-  expiresAt: number;
-}
-
-export interface HeygenSessionConfig {
-  avatarName?: string;
-  quality?: "high" | "medium" | "low";
-  voiceId?: string;
-  voiceEmotion?: "EXCITED" | "SERIOUS" | "FRIENDLY" | "SOOTHING" | "BROADCASTER";
-  language?: string;
-}
-
-export type HeygenAvatarStatus =
-  | "idle"
-  | "connecting"
-  | "connected"
-  | "speaking"
-  | "listening"
-  | "error"
-  | "disconnected";
-
-export interface HeygenAvatarState {
-  status: HeygenAvatarStatus;
-  sessionId: string | null;
-  isUserSpeaking: boolean;
-  isAvatarSpeaking: boolean;
-  error: string | null;
-}
-
-// Re-export HeyGen SDK events for convenience
-export type { StreamingEvents };
 
 // SSE Event types for coach feedback
 export interface CoachSSEEvent {

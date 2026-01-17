@@ -2,7 +2,7 @@
 
 export interface BuyerProfile {
   experienceLevel: "first_time" | "move_up" | "investor_lite";
-  emotionalState: "excited" | "rushed";
+  emotionalState: "excited" | "rushed" | "nervous" | "skeptical";
   financialComfort: "clear" | "unclear" | "embarrassed";
   resistanceLevel: "low" | "medium" | "high";
   questionDepth: "surface" | "mixed" | "advanced";
@@ -29,10 +29,22 @@ export interface TeleprompterSuggestion {
 
 export type CoachHookCategory = "fear" | "shame" | "curiosity" | "authority" | "drama";
 
+export interface AvatarOption {
+  id: string;
+  name: string;
+  description: string;
+  personality?: string;
+  previewImage?: string | null;
+  previewVideo?: string | null;
+  available?: boolean;
+}
+
 export interface SessionConfig {
   difficulty: "beginner" | "intermediate" | "advanced";
   durationMinutes: 10 | 30 | 60;
   buyerProfile: BuyerProfile;
+  selectedAvatarId?: string;
+  selectedAvatarName?: string;
 }
 
 export interface TranscriptEntry {
@@ -78,19 +90,61 @@ export interface ComplianceIssue {
 export interface KeyMoment {
   timestamp: number;
   type: "positive" | "negative" | "teachable";
+  title?: string;
   description: string;
   transcriptIndex?: number;
+  coachNote?: string;
+}
+
+export interface StrengthItem {
+  title: string;
+  description: string;
+  transcriptReference?: number;
+  impactLevel?: "high" | "medium" | "low";
+}
+
+export interface ImprovementItem {
+  title: string;
+  description: string;
+  priority?: "critical" | "important" | "nice-to-have";
+  transcriptReference?: number;
+  practiceExercise?: string;
+}
+
+export interface ConversationFlow {
+  rapportBuildingMinutes?: number;
+  discoveryMinutes?: number;
+  presentationMinutes?: number;
+  objectionHandlingMinutes?: number;
+  closingMinutes?: number;
+  analysis?: string;
+}
+
+export interface TalkTimeAnalysis {
+  agentTalkPercentage: number;
+  buyerTalkPercentage: number;
+  idealRange?: string;
+  analysis?: string;
+}
+
+export interface NextSessionFocus {
+  primary: string;
+  secondary?: string;
+  drillRecommendation?: string;
 }
 
 export interface SessionFeedback {
   overallGrade: string;
   overallSummary: string;
   skillGrades: SkillGrade[];
-  strengths: string[];
-  areasForImprovement: string[];
+  strengths: (string | StrengthItem)[];
+  areasForImprovement: (string | ImprovementItem)[];
   complianceIssues: ComplianceIssue[];
   keyMoments: KeyMoment[];
-  nextSessionFocus: string;
+  nextSessionFocus: string | NextSessionFocus;
+  conversationFlow?: ConversationFlow;
+  talkTimeAnalysis?: TalkTimeAnalysis;
+  coachingScript?: string;
 }
 
 export type SessionStatus =
@@ -122,8 +176,8 @@ export interface SessionState {
 
 export interface SessionStartResponse {
   sessionId: string;
-  heygenToken: string;
-  buyerSystemPrompt: string;
+  avatarImageUrl: string;
+  buyerSystemPrompt?: string;
 }
 
 export interface SessionEndResponse {

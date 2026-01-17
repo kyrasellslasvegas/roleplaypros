@@ -14,7 +14,7 @@ const features = [
     icon: Video,
     title: "AI Video Avatars",
     description:
-      "Practice with realistic AI buyers powered by HeyGen. See facial expressions, body language, and natural reactions in real-time.",
+      "Practice with realistic AI buyers powered by our custom realtime avatar. See facial expressions, body language, and natural reactions in real-time.",
     gradient: "from-blue-500 to-cyan-500",
   },
   {
@@ -79,7 +79,7 @@ export function FeaturesPreview() {
             <span className="text-gradient-gold">Close More Deals</span>
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            RoleplayPro combines cutting-edge AI with proven sales methodology.
+            Roleplay Pros combines cutting-edge AI with proven sales methodology.
             Here's a preview of what's coming.
           </p>
         </div>

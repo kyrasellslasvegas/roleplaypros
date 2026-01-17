@@ -196,6 +196,9 @@ function ComplianceAlertCard({ violation, onDismiss }: ComplianceAlertCardProps)
 
         {/* Dismiss button */}
         <button
+          type="button"
+          aria-label="Dismiss alert"
+          title="Dismiss alert"
           onClick={handleDismiss}
           className="shrink-0 rounded p-1 transition-colors hover:bg-white/10"
         >

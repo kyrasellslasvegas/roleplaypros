@@ -6,14 +6,14 @@ import { cn } from "@/lib/utils";
 
 const faqs = [
   {
-    question: "What is RoleplayPro?",
+    question: "What is Roleplay Pros?",
     answer:
-      "RoleplayPro is an AI-powered sales training platform specifically designed for real estate agents. You practice with realistic AI buyers (powered by HeyGen video avatars) while receiving real-time coaching from an AI sales coach. It's like having a personal trainer for your sales skills, available 24/7.",
+      "Roleplay Pros is an AI-powered sales training platform specifically designed for real estate agents. You practice with realistic AI buyers powered by our custom realtime avatar while receiving real-time coaching from an AI sales coach. It's like having a personal trainer for your sales skills, available 24/7.",
   },
   {
-    question: "When does RoleplayPro launch?",
+    question: "When does Roleplay Pros launch?",
     answer:
-      "RoleplayPro officially launches on January 16, 2026 at 12:01 PM PST. However, waitlist members get exclusive early access starting January 9, 2026—a full 7 days before everyone else.",
+      "Roleplay Pros officially launches on January 16, 2026 at 12:01 PM PST. However, waitlist members get exclusive early access starting January 9, 2026—a full 7 days before everyone else.",
   },
   {
     question: "What do I get by joining the waitlist?",
@@ -28,7 +28,7 @@ const faqs = [
   {
     question: "How do the AI buyers work?",
     answer:
-      "Our AI buyers are powered by HeyGen streaming avatars—you'll see a realistic video of a person who responds in real-time to what you say. They have unique personalities, emotional states, and resistance levels. They can be skeptical, enthusiastic, aggressive negotiators, or nervous first-timers. It feels like a real conversation.",
+      "Our AI buyers are powered by our custom realtime avatar—you'll see a realistic video of a person who responds in real-time to what you say. They have unique personalities, emotional states, and resistance levels. They can be skeptical, enthusiastic, aggressive negotiators, or nervous first-timers. It feels like a real conversation.",
   },
   {
     question: "What is the AI Sales Coach?",
@@ -36,7 +36,7 @@ const faqs = [
       "The AI Sales Coach is your personal training partner. During live sessions, it whispers suggestions through on-screen prompts—like a coach in your ear. After sessions, it provides detailed feedback on your performance, highlights areas for improvement, and tracks your progress over time.",
   },
   {
-    question: "Is RoleplayPro only for Nevada agents?",
+    question: "Is Roleplay Pros only for Nevada agents?",
     answer:
       "We're launching first with Nevada-specific compliance training, but the core sales training works for any real estate market. We're expanding to other states throughout 2026. If you're not in Nevada, you can still benefit from the objection handling, rapport building, and closing techniques.",
   },
@@ -65,7 +65,7 @@ export function FAQSection() {
             Frequently Asked <span className="text-primary font-semibold">Questions</span>
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Everything you need to know about RoleplayPro and the waitlist.
+            Everything you need to know about Roleplay Pros and the waitlist.
           </p>
         </div>
 
@@ -123,7 +123,7 @@ export function FAQSection() {
           <p className="text-muted-foreground">
             Still have questions?{" "}
             <a
-              href="mailto:support@roleplaypro.com"
+              href="mailto:support@roleplaypros.com"
               className="font-medium text-primary hover:text-gold-400 transition-colors"
             >
               Contact us

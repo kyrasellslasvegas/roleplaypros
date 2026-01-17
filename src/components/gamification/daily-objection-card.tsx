@@ -217,9 +217,9 @@ export function DailyObjectionCard({
           </div>
         )}
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex flex-col gap-3">
         <Button
-          onClick={onStartDrill}
+          onClick={() => onStartDrill()}
           disabled={isLoading}
           className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
           size="lg"
@@ -232,10 +232,13 @@ export function DailyObjectionCard({
           ) : (
             <>
               <Play className="h-4 w-4 mr-2" />
-              Start Daily Drill
+              Start Drill
             </>
           )}
         </Button>
+        <p className="text-xs text-muted-foreground text-center">
+          Practice with AI voice recognition and response
+        </p>
       </CardFooter>
     </Card>
   );

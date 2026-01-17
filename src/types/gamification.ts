@@ -292,7 +292,7 @@ export const LEVEL_TITLES: Record<number, string> = {
 
 export interface DailyDrillStartResponse {
   sessionId: string;
-  heygenToken: string;
+  avatarImageUrl: string;
   buyerSystemPrompt: string;
   objection: DailyObjection;
 }

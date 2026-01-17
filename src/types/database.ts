@@ -75,7 +75,6 @@ export interface Database {
           transcript: TranscriptEntry[] | null;
           created_at: string;
           buyer_profile: BuyerProfile | null;
-          heygen_session_id: string | null;
           coach_suggestions: CoachSuggestion[] | null;
           session_phases: SessionPhase[] | null;
           ended_at: string | null;
@@ -96,7 +95,6 @@ export interface Database {
           transcript?: TranscriptEntry[] | null;
           created_at?: string;
           buyer_profile?: BuyerProfile | null;
-          heygen_session_id?: string | null;
           coach_suggestions?: CoachSuggestion[] | null;
           session_phases?: SessionPhase[] | null;
           ended_at?: string | null;
@@ -117,7 +115,6 @@ export interface Database {
           transcript?: TranscriptEntry[] | null;
           created_at?: string;
           buyer_profile?: BuyerProfile | null;
-          heygen_session_id?: string | null;
           coach_suggestions?: CoachSuggestion[] | null;
           session_phases?: SessionPhase[] | null;
           ended_at?: string | null;

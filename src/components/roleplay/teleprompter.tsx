@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { phaseScripts } from "@/lib/ai/prompts/teleprompter-prompts";
 import type {
   SessionPhase,
-  TeleprompterSuggestion,
   BuyerProfile,
   TranscriptEntry,
 } from "@/types/session";
@@ -28,10 +27,9 @@ interface TeleprompterProps {
   className?: string;
 }
 
-interface DynamicSuggestion {
+interface StaticSuggestion {
   type: "question" | "response" | "transition" | "opener";
   text: string;
-  isLoading?: boolean;
 }
 
 export function Teleprompter({
@@ -41,60 +39,31 @@ export function Teleprompter({
   onAdvancePhase,
   className,
 }: TeleprompterProps) {
-  const [suggestions, setSuggestions] = useState<DynamicSuggestion[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<StaticSuggestion[]>([]);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showTips, setShowTips] = useState(false);
 
   const script = phaseScripts[currentPhase];
 
-  // Fetch dynamic suggestions from AI
-  const fetchSuggestions = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/ai/teleprompter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phase: currentPhase,
-          buyerProfile,
-          transcript: transcript.slice(-6),
-        }),
-      });
+  // Get static suggestions based on phase and transcript progress
+  const refreshSuggestions = useCallback(() => {
+    setSuggestions(getStaticSuggestions(currentPhase, transcript.length));
+  }, [currentPhase, transcript.length]);
 
-      if (response.ok) {
-        const data = await response.json();
-        setSuggestions(data.suggestions || []);
-      } else {
-        // Fallback to static suggestions
-        setSuggestions(getStaticSuggestions(currentPhase, transcript.length));
-      }
-    } catch (error) {
-      console.error("Failed to fetch teleprompter suggestions:", error);
-      setSuggestions(getStaticSuggestions(currentPhase, transcript.length));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentPhase, buyerProfile, transcript]);
-
-  // Fetch suggestions when transcript changes (debounced)
+  // Update suggestions when phase or transcript changes
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (transcript.length > 0) {
-        fetchSuggestions();
-      } else {
-        // Show openers at the start
-        setSuggestions(
-          script.openers.slice(0, 3).map((text) => ({
-            type: "opener" as const,
-            text,
-          }))
-        );
-      }
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, [transcript.length, currentPhase, fetchSuggestions, script.openers]);
+    if (transcript.length === 0) {
+      // Show openers at the start
+      setSuggestions(
+        script.openers.slice(0, 3).map((text) => ({
+          type: "opener" as const,
+          text,
+        }))
+      );
+    } else {
+      setSuggestions(getStaticSuggestions(currentPhase, transcript.length));
+    }
+  }, [transcript.length, currentPhase, script.openers]);
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -156,13 +125,11 @@ export function Teleprompter({
           <Button
             variant="ghost"
             size="sm"
-            onClick={fetchSuggestions}
-            disabled={isLoading}
+            onClick={refreshSuggestions}
             className="h-7 w-7 p-0"
+            title="Shuffle suggestions"
           >
-            <RefreshCw
-              className={cn("h-3.5 w-3.5", isLoading && "animate-spin")}
-            />
+            <RefreshCw className="h-3.5 w-3.5" />
           </Button>
           <Button
             variant="ghost"
@@ -184,32 +151,26 @@ export function Teleprompter({
 
       {/* Suggestions */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <RefreshCw className="h-5 w-5 animate-spin text-primary" />
-          </div>
-        ) : (
-          suggestions.map((suggestion, index) => (
-            <div
-              key={index}
-              className="group rounded-lg border border-border bg-background p-3 transition-colors hover:border-gold-500/50 hover:bg-primary/5"
-            >
-              <div className="flex items-start gap-2">
-                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-gold-500/10 text-primary">
-                  {getTypeIcon(suggestion.type)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-primary">
-                    {getTypeLabel(suggestion.type)}
-                  </span>
-                  <p className="mt-0.5 text-sm text-foreground leading-relaxed">
-                    "{suggestion.text}"
-                  </p>
-                </div>
+        {suggestions.map((suggestion, index) => (
+          <div
+            key={index}
+            className="group rounded-lg border border-border bg-background p-3 transition-colors hover:border-gold-500/50 hover:bg-primary/5"
+          >
+            <div className="flex items-start gap-2">
+              <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-gold-500/10 text-primary">
+                {getTypeIcon(suggestion.type)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-[10px] font-medium uppercase tracking-wider text-primary">
+                  {getTypeLabel(suggestion.type)}
+                </span>
+                <p className="mt-0.5 text-sm text-foreground leading-relaxed">
+                  "{suggestion.text}"
+                </p>
               </div>
             </div>
-          ))
-        )}
+          </div>
+        ))}
       </div>
 
       {/* Tips toggle */}
@@ -259,34 +220,51 @@ export function Teleprompter({
   );
 }
 
-// Fallback static suggestions
+// Static suggestions based on phase scripts
 function getStaticSuggestions(
   phase: SessionPhase,
   messageCount: number
-): DynamicSuggestion[] {
+): StaticSuggestion[] {
   const script = phaseScripts[phase];
 
+  // Helper to shuffle and pick random items
+  const shuffle = <T,>(arr: T[]): T[] => {
+    const shuffled = [...arr];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   if (messageCount === 0) {
-    return script.openers.slice(0, 3).map((text) => ({
+    // Show openers at the start
+    return shuffle(script.openers).slice(0, 3).map((text) => ({
       type: "opener" as const,
       text,
     }));
   }
 
   if (messageCount >= 6) {
-    return [
-      ...script.transitions.slice(0, 2).map((text) => ({
-        type: "transition" as const,
-        text,
-      })),
-      {
-        type: "question" as const,
-        text: script.questions[Math.floor(Math.random() * script.questions.length)],
-      },
-    ];
+    // Show transitions when ready to move to next phase
+    const suggestions: StaticSuggestion[] = [];
+
+    // Add 1-2 transitions
+    shuffle(script.transitions).slice(0, 2).forEach((text) => {
+      suggestions.push({ type: "transition" as const, text });
+    });
+
+    // Add 1 question
+    const randomQuestion = shuffle(script.questions)[0];
+    if (randomQuestion) {
+      suggestions.push({ type: "question" as const, text: randomQuestion });
+    }
+
+    return suggestions;
   }
 
-  return script.questions.slice(0, 3).map((text) => ({
+  // Show questions during the phase
+  return shuffle(script.questions).slice(0, 3).map((text) => ({
     type: "question" as const,
     text,
   }));

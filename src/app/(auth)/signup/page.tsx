@@ -27,7 +27,7 @@ export default async function SignupPage() {
             </div>
             <span className="font-display text-2xl font-semibold">
               <span className="text-primary font-semibold">Roleplay</span>
-              <span className="text-foreground">Pro</span>
+              <span className="text-foreground"> Pros</span>
             </span>
           </div>
 
@@ -59,10 +59,10 @@ export default async function SignupPage() {
 
       {/* Right side - Background */}
       <div className="relative hidden w-0 flex-1 lg:block">
-        <div className="absolute inset-0 bg-gradient-to-br from-muted via-background to-background">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
           {/* Decorative elements */}
-          <div className="absolute top-1/4 left-1/4 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
+          <div className="absolute top-1/4 left-1/4 h-64 w-64 rounded-full bg-primary/20 blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
 
           {/* Content */}
           <div className="absolute inset-0 flex items-center justify-center p-12">
@@ -73,15 +73,15 @@ export default async function SignupPage() {
               <div className="grid grid-cols-3 gap-8 mb-8">
                 <div>
                   <div className="text-3xl font-bold text-primary">40%</div>
-                  <div className="text-sm text-white/60">More closes</div>
+                  <div className="text-sm text-white/70">More closes</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold text-primary">2x</div>
-                  <div className="text-sm text-white/60">Faster training</div>
+                  <div className="text-sm text-white/70">Faster training</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold text-primary">24/7</div>
-                  <div className="text-sm text-white/60">AI coaching</div>
+                  <div className="text-sm text-white/70">AI coaching</div>
                 </div>
               </div>
               <blockquote className="font-display text-xl font-medium text-white/90">
@@ -102,7 +102,7 @@ export default async function SignupPage() {
                   ))}
                 </div>
                 <p className="mt-4 font-medium text-white">Marcus Johnson</p>
-                <p className="text-sm text-white/60">
+                <p className="text-sm text-white/70">
                   Luxury Home Specialist, Miami
                 </p>
               </div>

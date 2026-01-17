@@ -400,7 +400,7 @@ function BillingPageContent() {
                 className="w-full border-purple-500/50 text-purple-400 hover:bg-purple-500/10"
                 asChild
               >
-                <a href="mailto:sales@roleplaypro.com">Contact Sales</a>
+                <a href="mailto:sales@roleplaypros.com">Contact Sales</a>
               </Button>
             </CardFooter>
           </Card>

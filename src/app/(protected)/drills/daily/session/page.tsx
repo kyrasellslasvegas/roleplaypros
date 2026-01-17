@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useHeygenAvatar } from "@/hooks/use-heygen-avatar";
-import { AvatarVideo } from "@/components/roleplay/avatar-video";
+import { useCustomAvatar } from "@/hooks/use-custom-avatar";
+import { CustomAvatar } from "@/components/roleplay/custom-avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,13 +17,16 @@ import {
   Clock,
   MessageSquare,
   Zap,
+  AlertCircle,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DailyObjection } from "@/types/gamification";
+import { PERSONALITY_VOICE_MAP, type TTSVoice } from "@/types/avatar";
 
 interface DrillConfig {
   sessionId: string;
-  heygenToken: string;
+  avatarImageUrl: string;
   buyerSystemPrompt: string;
   objection: DailyObjection;
 }
@@ -48,35 +51,59 @@ function DrillSessionContent() {
   const [drillPhase, setDrillPhase] = useState<"intro" | "active" | "complete">("intro");
   const [isEnding, setIsEnding] = useState(false);
   const [exchangeCount, setExchangeCount] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [conversationError, setConversationError] = useState<string | null>(null);
 
   const lastUserMessageRef = useRef<string>("");
   const isProcessingRef = useRef(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const transcriptEndRef = useRef<HTMLDivElement>(null);
 
   const MAX_DURATION_SECONDS = 5 * 60; // 5 minutes
   const MAX_EXCHANGES = 5; // Max back-and-forth exchanges
 
-  // HeyGen avatar hook
-  const avatar = useHeygenAvatar({
+  // Get personality voice for TTS based on buyer scenario
+  const personalityVoice: TTSVoice = config?.objection?.buyerScenario?.personality
+    ? PERSONALITY_VOICE_MAP[config.objection.buyerScenario.personality] || "echo"
+    : "echo";
+
+  // Custom avatar hook
+  const avatar = useCustomAvatar({
     onUserMessage: handleUserMessage,
     onAvatarSpeakingChange: (speaking) => {
       if (!speaking && drillPhase === "intro") {
         setDrillPhase("active");
       }
     },
-    onError: (error) => {
-      setError(error.message);
+    onError: (err) => {
+      console.error("Avatar error:", err);
+      setConversationError(err.message);
     },
+    personalityVoice,
   });
 
-  // Handle user speech from HeyGen
+  // Auto-scroll transcript
+  useEffect(() => {
+    transcriptEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [transcript]);
+
+  // Handle user speech from custom avatar
   async function handleUserMessage(text: string) {
     if (!text.trim() || isProcessingRef.current || !config) return;
     if (text === lastUserMessageRef.current) return;
     if (drillPhase !== "active") return;
 
     lastUserMessageRef.current = text;
+    await processUserMessage(text);
+  }
+
+  // Process user message
+  async function processUserMessage(text: string) {
+    if (isProcessingRef.current || !config) return;
+
     isProcessingRef.current = true;
+    setIsProcessing(true);
+    setConversationError(null); // Clear any previous error
 
     try {
       // Add user message to transcript
@@ -98,11 +125,11 @@ function DrillSessionContent() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to get buyer response");
-      }
-
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to get buyer response");
+      }
 
       // Add buyer response to transcript
       setTranscript((prev) => [
@@ -112,7 +139,7 @@ function DrillSessionContent() {
 
       setExchangeCount((prev) => prev + 1);
 
-      // Make avatar speak the response
+      // Make avatar speak
       await avatar.speak(data.response, data.emotion);
 
       // Check if drill should end
@@ -121,8 +148,11 @@ function DrillSessionContent() {
       }
     } catch (error) {
       console.error("Error processing user message:", error);
+      const errorMessage = error instanceof Error ? error.message : "Something went wrong";
+      setConversationError(errorMessage);
     } finally {
       isProcessingRef.current = false;
+      setIsProcessing(false);
       lastUserMessageRef.current = "";
     }
   }
@@ -139,18 +169,16 @@ function DrillSessionContent() {
         const parsed: DrillConfig = JSON.parse(decodeURIComponent(configParam));
         setConfig(parsed);
 
-        // Connect to HeyGen avatar
-        await avatar.startSession(parsed.heygenToken);
+        // Connect to custom avatar
+        await avatar.startSession(parsed.avatarImageUrl);
 
         // Start with the buyer presenting the objection
-        const introMessage = parsed.objection.objectionText;
         setTranscript([
-          { role: "buyer", content: introMessage, timestamp: new Date() },
+          { role: "buyer", content: parsed.objection.objectionText, timestamp: new Date() },
         ]);
 
         // Make avatar speak the objection
-        await avatar.speak(introMessage, "skeptical");
-
+        await avatar.speak(parsed.objection.objectionText, "skeptical");
         setIsInitializing(false);
       } catch (err) {
         console.error("Session initialization error:", err);
@@ -272,7 +300,7 @@ function DrillSessionContent() {
           Setting up your drill session...
         </p>
         <p className="text-sm text-muted-foreground/60">
-          Connecting to AI buyer avatar
+          Connecting to AI buyer
         </p>
       </div>
     );
@@ -291,6 +319,7 @@ function DrillSessionContent() {
     );
   }
 
+  // Main UI
   return (
     <div className="flex h-screen flex-col bg-background">
       {/* Header */}
@@ -351,13 +380,15 @@ function DrillSessionContent() {
 
       {/* Main content */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Center - Avatar video */}
+        {/* Center - Custom Avatar */}
         <div className="flex-1 flex flex-col p-4 relative">
-          <AvatarVideo
-            ref={avatar.videoRef}
+          <CustomAvatar
             status={avatar.status}
             isUserSpeaking={avatar.isUserSpeaking}
             isAvatarSpeaking={avatar.isAvatarSpeaking}
+            isMicActive={isVoiceChatActive}
+            avatarImageUrl={avatar.avatarImageUrl}
+            audioLevel={avatar.audioLevel}
             error={avatar.error}
             className="flex-1"
           />
@@ -424,6 +455,25 @@ function DrillSessionContent() {
               </p>
             )}
           </div>
+
+          {/* Error banner */}
+          {conversationError && (
+            <div className="mt-4 mx-auto max-w-md p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-red-500">Error</p>
+                <p className="text-sm text-red-400">{conversationError}</p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0 text-red-400 hover:text-red-300"
+                onClick={() => setConversationError(null)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Right side - Transcript */}
@@ -468,7 +518,7 @@ function DrillSessionContent() {
               <ul className="space-y-1">
                 {config.objection.tips.slice(0, 2).map((tip, i) => (
                   <li key={i} className="text-xs text-muted-foreground">
-                    • {tip}
+                    - {tip}
                   </li>
                 ))}
               </ul>

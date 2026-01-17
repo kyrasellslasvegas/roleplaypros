@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Clock, Mail, MessageSquare, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Application Received | RoleplayPro",
+  title: "Application Received | Roleplay Pros",
   description: "Your early access application has been received. We're verifying your license information.",
 };
 
@@ -23,7 +23,7 @@ export default function ConfirmationPage() {
           Application Received!
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Thank you for applying to RoleplayPro&apos;s early access program.
+          Thank you for applying to Roleplay Pros&apos;s early access program.
         </p>
       </div>
 
@@ -118,7 +118,7 @@ export default function ConfirmationPage() {
         </p>
         <Button asChild variant="outline" className="gap-2">
           <Link href="/">
-            Explore RoleplayPro Features
+            Explore Roleplay Pros Features
             <ArrowRight className="h-4 w-4" />
           </Link>
         </Button>
@@ -128,10 +128,10 @@ export default function ConfirmationPage() {
       <p className="mt-8 text-center text-sm text-muted-foreground">
         Questions? Contact us at{" "}
         <a
-          href="mailto:support@roleplaypro.com"
+          href="mailto:support@roleplaypros.com"
           className="text-primary hover:underline"
         >
-          support@roleplaypro.com
+          support@roleplaypros.com
         </a>
       </p>
     </div>

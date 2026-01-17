@@ -65,7 +65,7 @@ export async function sendApprovalSMS({
   to: string;
   firstName: string;
 }) {
-  const body = `You're Approved! Welcome to RoleplayPro, ${firstName}! Check your email to get started with your first AI roleplaying session. Let's close some deals! - The RoleplayPro Team`;
+  const body = `You're Approved! Welcome to Roleplay Pros, ${firstName}! Check your email to get started with your first AI roleplaying session. Let's close some deals! - The Roleplay Pros Team`;
 
   return sendSMS({ to, body });
 }

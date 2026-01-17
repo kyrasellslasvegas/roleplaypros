@@ -80,7 +80,7 @@ export function DashboardSidebar() {
         </div>
         <span className="font-display text-xl font-semibold">
           <span className="text-primary font-semibold">Roleplay</span>
-          <span className="text-foreground">Pro</span>
+          <span className="text-foreground"> Pros</span>
         </span>
       </div>
 
@@ -205,7 +205,7 @@ export function DashboardSidebar() {
           <Menu className="h-6 w-6" />
         </button>
         <div className="flex-1 text-sm font-semibold text-foreground">
-          RoleplayPro
+          Roleplay Pros
         </div>
       </div>
 
@@ -222,6 +222,7 @@ export function DashboardSidebar() {
                 type="button"
                 className="p-2.5 text-muted-foreground"
                 onClick={() => setMobileOpen(false)}
+                title="Close sidebar"
               >
                 <X className="h-6 w-6" />
               </button>

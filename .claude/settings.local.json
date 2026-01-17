@@ -15,7 +15,20 @@
       "Bash(dir /s /b \"C:\\\\Users\\\\Kyra\\\\OneDrive\\\\Documents\\\\Roleplay Saas\\\\src\")",
       "Bash(findstr:*)",
       "Bash(vercel --version:*)",
-      "Bash(npx vercel:*)"
+      "Bash(npx vercel:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run lint)",
+      "Bash(npx eslint:*)",
+      "Bash(curl:*)",
+      "Bash(timeout /t 8 /nobreak)",
+      "Bash(powershell -Command \"Start-Sleep -Seconds 10; Invoke-WebRequest -Uri ''http://localhost:3000/api/heygen/debug'' -UseBasicParsing | Select-Object -ExpandProperty Content\")",
+      "Bash(powershell -Command:*)",
+      "Bash(npm run dev:*)",
+      "Bash(taskkill:*)",
+      "Bash(Get-Process -Name \"node\" -ErrorAction SilentlyContinue)",
+      "Bash(Stop-Process -Force)",
+      "Bash(npx kill-port:*)",
+      "Bash(tasklist:*)"
     ]
   }
 }
